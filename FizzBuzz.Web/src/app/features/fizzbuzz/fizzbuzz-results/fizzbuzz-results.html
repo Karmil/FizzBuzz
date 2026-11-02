@@ -1,0 +1,23 @@
+<p class="summary">
+  <strong>{{ values().length }}</strong> résultat(s), dont <strong>{{ replacedCount() }}</strong> remplacé(s)
+</p>
+
+<cdk-virtual-scroll-viewport
+  class="viewport"
+  [itemSize]="rowHeight"
+  [style.height.px]="viewportHeight()"
+  role="list"
+  aria-label="Séquence FizzBuzz"
+  tabindex="0"
+>
+  <div
+    *cdkVirtualFor="let value of values(); let index = index"
+    class="row"
+    role="listitem"
+    [attr.aria-setsize]="values().length"
+    [attr.aria-posinset]="index + 1"
+  >
+    <span class="position">{{ index + 1 }}</span>
+    <span class="value" [class.value--replaced]="isReplaced(value, index)">{{ value }}</span>
+  </div>
+</cdk-virtual-scroll-viewport>

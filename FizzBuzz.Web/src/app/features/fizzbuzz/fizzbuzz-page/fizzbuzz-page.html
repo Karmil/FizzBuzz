@@ -1,0 +1,34 @@
+<section class="card" aria-labelledby="parameters-title">
+  <h2 id="parameters-title">Paramètres</h2>
+  <app-fizzbuzz-form [loading]="loading()" (generate)="generate($event)" (resetRequested)="reset()" />
+</section>
+
+<section class="card" aria-labelledby="results-title" [attr.aria-busy]="loading()">
+  <h2 id="results-title">Résultats</h2>
+
+  <p class="visually-hidden" role="status" aria-live="polite">{{ statusMessage() }}</p>
+
+  @let current = state();
+  @if (current.status === 'success') {
+    <app-fizzbuzz-results [values]="current.values" />
+  } @else if (current.status === 'error') {
+    <div class="alert" role="alert">
+      <p class="alert__message">{{ current.error.message }}</p>
+      @let fieldErrors = current.error.fieldErrors | keyvalue;
+      @if (fieldErrors.length > 0) {
+        <ul>
+          @for (fieldError of fieldErrors; track fieldError.key) {
+            <li><code>{{ fieldError.key }}</code> : {{ fieldError.value.join(' ') }}</li>
+          }
+        </ul>
+      }
+      @if (current.error.traceId) {
+        <p class="alert__trace">Identifiant de suivi : <code>{{ current.error.traceId }}</code></p>
+      }
+    </div>
+  } @else if (current.status === 'loading') {
+    <p class="placeholder">Génération en cours…</p>
+  } @else {
+    <p class="placeholder">Renseignez les paramètres puis cliquez sur « Générer ».</p>
+  }
+</section>

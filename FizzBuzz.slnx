@@ -1,0 +1,26 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".dockerignore" />
+    <File Path=".editorconfig" />
+    <File Path="compose.yaml" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="Dockerfile.api" />
+    <File Path="Dockerfile.web" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="FizzBuzz.Api/FizzBuzz.Api.csproj" />
+    <Project Path="FizzBuzz.Application/FizzBuzz.Application.csproj" />
+    <Project Path="FizzBuzz.Domain/FizzBuzz.Domain.csproj" />
+    <Project Path="FizzBuzz.Web/FizzBuzz.Web.esproj">
+      <Build />
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Test/">
+    <Project Path="FizzBuzz.IntegrationTests/FizzBuzz.IntegrationTests.csproj" />
+    <Project Path="FizzBuzz.UnitTests/FizzBuzz.UnitTests.csproj" />
+  </Folder>
+</Solution>

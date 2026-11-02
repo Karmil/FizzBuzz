@@ -1,0 +1,45 @@
+# syntax=docker/dockerfile:1
+
+# ---- Build: restore (cached layer) then publish -------------------------------------------
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+WORKDIR /src
+
+# Only project files first, so that the restore layer is reused while dependencies are unchanged.
+COPY global.json Directory.Build.props Directory.Packages.props .editorconfig ./
+COPY FizzBuzz.Domain/FizzBuzz.Domain.csproj FizzBuzz.Domain/
+COPY FizzBuzz.Application/FizzBuzz.Application.csproj FizzBuzz.Application/
+COPY FizzBuzz.Api/FizzBuzz.Api.csproj FizzBuzz.Api/
+RUN dotnet restore FizzBuzz.Api/FizzBuzz.Api.csproj
+
+COPY FizzBuzz.Domain/ FizzBuzz.Domain/
+COPY FizzBuzz.Application/ FizzBuzz.Application/
+COPY FizzBuzz.Api/ FizzBuzz.Api/
+RUN dotnet publish FizzBuzz.Api/FizzBuzz.Api.csproj \
+      --configuration Release \
+      --no-restore \
+      --output /app/publish \
+      -p:UseAppHost=false \
+      -p:ContinuousIntegrationBuild=true
+
+# ---- Runtime: ASP.NET Core only, non-root user ------------------------------------------
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
+WORKDIR /app
+
+# TLS is terminated upstream (reverse proxy / ingress), hence no HTTPS redirection.
+# DOTNET_EnableDiagnostics=0 disables the diagnostic IPC socket, allowing a read-only root filesystem.
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    ASPNETCORE_HTTP_PORTS=8080 \
+    Https__RedirectionEnabled=false \
+    DOTNET_EnableDiagnostics=0
+
+COPY --from=build /app/publish .
+
+# Non-root user provided by the official .NET images.
+USER $APP_UID
+EXPOSE 8080
+
+# busybox wget ships with Alpine; the liveness probe only checks that the process answers.
+HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget -q -O /dev/null http://127.0.0.1:8080/health/live || exit 1
+
+ENTRYPOINT ["dotnet", "FizzBuzz.Api.dll"]

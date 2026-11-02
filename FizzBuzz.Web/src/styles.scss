@@ -1,0 +1,80 @@
+:root {
+  color-scheme: light dark;
+
+  --color-background: #f4f5fb;
+  --color-surface: #ffffff;
+  --color-text: #1b1d29;
+  --color-muted: #5b5f73;
+  --color-border: #d7d9e4;
+  --color-primary: #4338ca;
+  --color-on-primary: #ffffff;
+  --color-focus: #f59e0b;
+  --color-danger: #b42318;
+  --color-danger-surface: #fdecea;
+  --radius: 6px;
+  --shadow: 0 1px 3px rgb(16 24 40 / 10%), 0 1px 2px rgb(16 24 40 / 6%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #11131c;
+    --color-surface: #1b1e2b;
+    --color-text: #eceef5;
+    --color-muted: #a3a7bb;
+    --color-border: #343850;
+    --color-primary: #a5b4fc;
+    --color-on-primary: #11131c;
+    --color-danger: #fca5a5;
+    --color-danger-surface: #3b1d1d;
+    --shadow: none;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.container {
+  width: min(100% - 2rem, 60rem);
+  margin-inline: auto;
+}
+
+.app-header {
+  padding: 2rem 0 1.5rem;
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+  }
+
+  p {
+    margin: 0.25rem 0 0;
+    color: var(--color-muted);
+  }
+}
+
+main {
+  padding-bottom: 3rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

@@ -1,0 +1,52 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate aria-label="Paramètres FizzBuzz">
+  <div class="fields">
+    @for (field of fields; track field.name) {
+      @let invalid = showError(field.name);
+      @let describedBy = field.name + '-hint' + (invalid ? ' ' + field.name + '-error' : '');
+
+      <div class="field" [class.field--invalid]="invalid">
+        <label [for]="field.name">{{ field.label }}</label>
+        <!-- The type attribute must be static: it selects the value accessor (number vs text) at compile time. -->
+        @if (field.type === 'number') {
+          <input
+            type="number"
+            inputmode="numeric"
+            min="1"
+            step="1"
+            [id]="field.name"
+            [formControlName]="field.name"
+            [attr.aria-invalid]="invalid"
+            [attr.aria-describedby]="describedBy"
+            autocomplete="off"
+            required
+          />
+        } @else {
+          <input
+            type="text"
+            [id]="field.name"
+            [formControlName]="field.name"
+            [attr.aria-invalid]="invalid"
+            [attr.aria-describedby]="describedBy"
+            autocomplete="off"
+            required
+          />
+        }
+        <small class="hint" [id]="field.name + '-hint'">{{ field.hint }}</small>
+        @if (invalid) {
+          <small class="error" [id]="field.name + '-error'">{{ errorMessage(field.name) }}</small>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="actions">
+    <button type="submit" class="primary" [disabled]="loading()" [attr.aria-busy]="loading()">
+      @if (loading()) {
+        <span class="spinner" aria-hidden="true"></span> Génération…
+      } @else {
+        Générer
+      }
+    </button>
+    <button type="button" class="secondary" (click)="reset()">Réinitialiser</button>
+  </div>
+</form>

@@ -1,0 +1,22 @@
+@FizzBuzz.Api_HostAddress = http://localhost:5001
+
+### Nominal case
+GET {{FizzBuzz.Api_HostAddress}}/api/v1/fizzbuzz?int1=3&int2=5&limit=15&str1=Fizz&str2=Buzz
+Accept: application/json
+
+### Unicode and reserved characters must be percent-encoded
+GET {{FizzBuzz.Api_HostAddress}}/api/v1/fizzbuzz?int1=2&int2=3&limit=6&str1=C%2B%2B&str2=%F0%9F%98%80
+Accept: application/json
+
+### Validation errors (400 ValidationProblemDetails)
+GET {{FizzBuzz.Api_HostAddress}}/api/v1/fizzbuzz?int1=0&int2=abc&limit=20000&str1=&str2=Buzz
+Accept: application/json
+
+### Liveness
+GET {{FizzBuzz.Api_HostAddress}}/health/live
+
+### Readiness
+GET {{FizzBuzz.Api_HostAddress}}/health/ready
+
+### OpenAPI document (Development only)
+GET {{FizzBuzz.Api_HostAddress}}/openapi/v1.json

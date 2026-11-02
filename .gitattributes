@@ -1,0 +1,9 @@
+# Normalize line endings in the repository (LF), whatever the OS of the contributor.
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+*.ico binary
+*.png binary

@@ -1,0 +1,49 @@
+name: fizzbuzz
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: fizzbuzz-api:local
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      # Trust X-Forwarded-For from Nginx so that rate limiting sees the real client IP.
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      FizzBuzz__MaxLimit: ${FIZZBUZZ_MAX_LIMIT:-10000}
+      RateLimiting__PermitLimit: ${RATE_LIMIT_PERMITS:-100}
+      RateLimiting__WindowSeconds: ${RATE_LIMIT_WINDOW_SECONDS:-10}
+      Logging__LogLevel__Default: ${API_LOG_LEVEL:-Information}
+    # Reachable only from the internal network, through the web container.
+    expose:
+      - "8080"
+    healthcheck:
+      # Readiness: Nginx only starts once the API actually serves FizzBuzz.
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/health/ready || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    image: fizzbuzz-web:local
+    ports:
+      - "${WEB_PORT:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
